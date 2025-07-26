@@ -67,7 +67,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "husky": "^9.0.0",
-    "lint-staged": "^15.0.0"
+    "lint-staged": "^16.1.2"
   },
   "lint-staged": {
     "*.{js,ts,json,md,yml,yaml}": [
