@@ -70,6 +70,9 @@
     "lint-staged": "^15.0.0"
   },
   "lint-staged": {
+    "*.{js,ts,json,md,yml,yaml}": [
+      "prettier --check"
+    ],
     "src/**/*.ts": [
       "eslint --fix",
       "prettier --write"
