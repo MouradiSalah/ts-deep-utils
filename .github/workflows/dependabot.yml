@@ -1,4 +1,4 @@
-name: Dependabot Auto-merge
+name: Dependabot Tests
 
 on:
   pull_request:
@@ -13,21 +13,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run formatting check
+        run: npm run format:check
+
       - name: Run tests
         run: npm test
 
-      - name: Enable auto-merge for Dependabot PRs
-        if: ${{ success() }}
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run build
+        run: npm run build
