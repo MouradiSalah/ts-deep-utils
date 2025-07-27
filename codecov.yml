@@ -1,0 +1,16 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80% # the required coverage value
+        threshold: 1% # the leniency in hitting the target
+        base: auto
+    patch:
+      default:
+        target: 80% # the required coverage value for new code
+        threshold: 1% # the leniency in hitting the target
+
+comment:
+  layout: 'reach,diff,flags,tree'
+  behavior: default
+  require_changes: false
