@@ -9,6 +9,7 @@ A TypeScript utility library focused on deep operations for objects and arrays w
 - 🧪 **Well Tested**: Comprehensive test coverage
 - 📦 **Tree Shakeable**: Import only what you need
 - 🔧 **Deep Operations**: Focus on nested object/array manipulation
+- 🗑️ **Deep Delete**: Remove nested properties immutably
 
 ## Installation
 
@@ -67,6 +68,18 @@ deepSet(obj, 'a.b.c', 42);
 // obj is now { a: { b: { c: 42 } } }
 ```
 
+### deepDelete
+
+Deletes a property at a given dot-separated path from an object or array, returning a new object with the property removed. The original object is not mutated.
+
+```typescript
+import { deepDelete } from 'ts-deep-utils';
+
+const obj = { a: { b: { c: 1, d: 2 } } };
+const result = deepDelete(obj, 'a.b.c');
+// result: { a: { b: { d: 2 } } }
+```
+
 ## API Reference
 
 ### `deepClone<T>(obj: T): T`
@@ -114,6 +127,33 @@ Sets a nested property in an object.
 - `value`: The value to set at the specified path
 
 **Returns:** The modified object (same reference as input)
+
+### `deepDelete<T>(obj: T, path: string): T`
+
+Deletes a property at the specified dot-separated path from an object or array, returning a new object with the property removed. The original object is not mutated.
+
+**Parameters:**
+
+- `obj`: The object or array to delete from
+- `path`: Dot-separated path to the property (e.g., 'a.b.c' or 'arr.0.id')
+
+**Returns:** A new object with the property removed (original is not mutated)
+
+**Examples:**
+
+```typescript
+// Remove nested property
+deepDelete({ a: { b: { c: 1 } } }, 'a.b.c'); // { a: { b: {} } }
+
+// Remove property from array element
+deepDelete({ arr: [{ id: 1 }, { id: 2 }] }, 'arr.0.id'); // { arr: [{}, { id: 2 }] }
+
+// Path does not exist
+deepDelete({ a: 1 }, 'b.c'); // { a: 1 }
+
+// Empty path returns original object
+deepDelete({ a: 1 }, ''); // { a: 1 }
+```
 
 ## Development
 
