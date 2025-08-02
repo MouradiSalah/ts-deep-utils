@@ -1,6 +1,6 @@
 {
   "name": "ts-deep-utils",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A TypeScript utility library focused on deep operations for objects and arrays with full type safety. Similar to Lodash, but narrower in scope and fully written in TypeScript to maximize typing support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
