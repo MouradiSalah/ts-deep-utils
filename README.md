@@ -68,6 +68,24 @@ deepSet(obj, 'a.b.c', 42);
 // obj is now { a: { b: { c: 42 } } }
 ```
 
+### deepKeys
+
+Extracts all keys from a nested object with flexible output options.
+
+```typescript
+import { deepKeys } from 'ts-deep-utils';
+
+const obj = { user: { profile: { name: 'John', age: 30 } } };
+
+// Get unique key names only (default)
+const keys = deepKeys(obj);
+// Result: ['user', 'profile', 'name', 'age']
+
+// Get dot-notation paths
+const paths = deepKeys(obj, { paths: true });
+// Result: ['user', 'user.profile', 'user.profile.name', 'user.profile.age']
+```
+
 ### deepDelete
 
 Deletes a property at a given dot-separated path from an object or array, returning a new object with the property removed. The original object is not mutated.
@@ -127,6 +145,32 @@ Sets a nested property in an object.
 - `value`: The value to set at the specified path
 
 **Returns:** The modified object (same reference as input)
+
+### `deepKeys<T>(obj: T, options?: { paths?: boolean }): string[]`
+
+Extracts all keys from a nested object with flexible output options.
+
+**Parameters:**
+
+- `obj`: The object to extract keys from (must extend Record<string, unknown>)
+- `options`: Configuration options
+  - `paths`: If true, returns dot-notation paths (e.g., 'a.b.c'). If false, returns only unique key names (default: false)
+
+**Returns:** An array containing keys or paths based on the configuration
+
+**Examples:**
+
+```typescript
+const obj = { user: { profile: { name: 'John', age: 30 } } };
+
+// Get unique key names only (default)
+deepKeys(obj);
+// Result: ['user', 'profile', 'name', 'age']
+
+// Get dot-notation paths
+deepKeys(obj, { paths: true });
+// Result: ['user', 'user.profile', 'user.profile.name', 'user.profile.age']
+```
 
 ### `deepDelete<T>(obj: T, path: string): T`
 
