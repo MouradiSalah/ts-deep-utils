@@ -33,14 +33,19 @@
  * // Result: ['a', 'a.b', 'a.b.c', 'a.d', 'e']
  * ```
  */
-export function deepKeys<T extends Record<string, unknown>>(
-  obj: T,
-  options: { paths?: boolean } = {}
-): string[] {
+export function deepKeys<T>(obj: T, options: { paths?: boolean } = {}): string[] {
   const { paths = false } = options;
   const keys = new Set<string>();
 
-  function collectKeys(o: Record<string, unknown>, prefix = ''): void {
+  function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+  }
+
+  function collectKeys(o: unknown, prefix = ''): void {
+    if (!isObject(o)) {
+      return;
+    }
+
     for (const key in o) {
       if (Object.prototype.hasOwnProperty.call(o, key)) {
         const currentPath = prefix ? `${prefix}.${key}` : key;
@@ -51,8 +56,9 @@ export function deepKeys<T extends Record<string, unknown>>(
           keys.add(key);
         }
 
-        if (typeof o[key] === 'object' && o[key] !== null && !Array.isArray(o[key])) {
-          collectKeys(o[key] as Record<string, unknown>, paths ? currentPath : '');
+        const value = o[key];
+        if (isObject(value)) {
+          collectKeys(value, paths ? currentPath : '');
         }
       }
     }

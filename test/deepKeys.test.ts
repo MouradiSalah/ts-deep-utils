@@ -112,4 +112,83 @@ describe('deepKeys', () => {
       expect(keys.sort()).toEqual(['a', 'b', 'c'].sort());
     });
   });
+
+  describe('flexible object types', () => {
+    it('should handle objects with numeric keys', () => {
+      const obj = { 0: { 1: 'value' }, name: 'test' };
+      const keys = deepKeys(obj);
+      expect(keys.sort()).toEqual(['0', '1', 'name'].sort());
+    });
+
+    it('should handle objects with numeric keys in paths mode', () => {
+      const obj = { 0: { 1: 'value' }, name: 'test' };
+      const keys = deepKeys(obj, { paths: true });
+      expect(keys.sort()).toEqual(['0', '0.1', 'name'].sort());
+    });
+
+    it('should handle mixed key types', () => {
+      const obj = {
+        stringKey: {
+          0: 'numeric key',
+          nestedString: 'value',
+        },
+        1: {
+          anotherString: 'test',
+        },
+      };
+      const keys = deepKeys(obj);
+      expect(keys.sort()).toEqual(['stringKey', '0', 'nestedString', '1', 'anotherString'].sort());
+    });
+
+    it('should handle Map-like objects', () => {
+      const mapLike = Object.create(null);
+      mapLike.key1 = { nested: 'value' };
+      mapLike.key2 = 'simple';
+      const keys = deepKeys(mapLike);
+      expect(keys.sort()).toEqual(['key1', 'nested', 'key2'].sort());
+    });
+
+    it('should handle class instances with properties', () => {
+      class TestClass {
+        public prop1 = { nested: 'value' };
+        public prop2 = 'simple';
+      }
+      const instance = new TestClass();
+      const keys = deepKeys(instance, { paths: true });
+      expect(keys.sort()).toEqual(['prop1', 'prop1.nested', 'prop2'].sort());
+    });
+
+    it('should handle non-object inputs gracefully', () => {
+      expect(deepKeys(null)).toEqual([]);
+      expect(deepKeys(undefined)).toEqual([]);
+      expect(deepKeys('string')).toEqual([]);
+      expect(deepKeys(123)).toEqual([]);
+      expect(deepKeys(true)).toEqual([]);
+    });
+
+    it('should handle primitive values in nested structures', () => {
+      const obj = {
+        string: 'value',
+        number: 42,
+        boolean: true,
+        nullValue: null,
+        undefinedValue: undefined,
+        nested: {
+          moreValues: 'test',
+        },
+      };
+      const keys = deepKeys(obj);
+      expect(keys.sort()).toEqual(
+        [
+          'string',
+          'number',
+          'boolean',
+          'nullValue',
+          'undefinedValue',
+          'nested',
+          'moreValues',
+        ].sort()
+      );
+    });
+  });
 });
