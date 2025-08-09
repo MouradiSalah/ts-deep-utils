@@ -68,6 +68,22 @@ deepSet(obj, 'a.b.c', 42);
 // obj is now { a: { b: { c: 42 } } }
 ```
 
+### deepHas
+
+Checks if a nested property exists in an object using a dot-separated path.
+
+```typescript
+import { deepHas } from 'ts-deep-utils';
+
+const obj = { a: { b: { c: 42 } } };
+const exists = deepHas(obj, 'a.b.c'); // Returns true
+const notExists = deepHas(obj, 'a.b.x'); // Returns false
+
+// Works with arrays and mixed data types
+const complexObj = { users: [{ id: 1, profile: { name: 'John' } }] };
+deepHas(complexObj, 'users.0.profile.name'); // Returns true
+```
+
 ### deepKeys
 
 Extracts all keys from a nested object with flexible output options.
@@ -145,6 +161,35 @@ Sets a nested property in an object.
 - `value`: The value to set at the specified path
 
 **Returns:** The modified object (same reference as input)
+
+### `deepHas<T>(obj: T, path: string): boolean`
+
+Checks if a nested property exists in an object using a dot-separated path.
+
+**Parameters:**
+
+- `obj`: The object to check for the property
+- `path`: Dot-separated path to the property (e.g., 'a.b.c')
+
+**Returns:** True if the property exists, false otherwise
+
+**Examples:**
+
+```typescript
+const obj = { a: { b: { c: 42 } } };
+deepHas(obj, 'a.b.c'); // Returns true
+deepHas(obj, 'a.b.x'); // Returns false
+
+// Works with arrays
+const arr = { items: [{ id: 1 }, { id: 2 }] };
+deepHas(arr, 'items.0.id'); // Returns true
+deepHas(arr, 'items.2'); // Returns false
+
+// Handles null/undefined values correctly
+const obj2 = { user: { profile: null } };
+deepHas(obj2, 'user.profile'); // Returns true (null is a valid value)
+deepHas(obj2, 'user.profile.name'); // Returns false (can't access properties of null)
+```
 
 ### `deepKeys<T>(obj: T, options?: { paths?: boolean }): string[]`
 
