@@ -84,6 +84,33 @@ const complexObj = { users: [{ id: 1, profile: { name: 'John' } }] };
 deepHas(complexObj, 'users.0.profile.name'); // Returns true
 ```
 
+### deepEqual
+
+Performs deep equality comparison between two values, including objects, arrays, and primitive values.
+
+```typescript
+import { deepEqual } from 'ts-deep-utils';
+
+const obj1 = { a: 1, b: { c: [1, 2, 3] } };
+const obj2 = { a: 1, b: { c: [1, 2, 3] } };
+deepEqual(obj1, obj2); // Returns true
+
+// Works with arrays
+const arr1 = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'Jane' },
+];
+const arr2 = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'Jane' },
+];
+deepEqual(arr1, arr2); // Returns true
+
+// Handles special cases
+deepEqual(NaN, NaN); // Returns true (unlike === comparison)
+deepEqual(new Date('2023-01-01'), new Date('2023-01-01')); // Returns true
+```
+
 ### deepKeys
 
 Extracts all keys from a nested object with flexible output options.
@@ -189,6 +216,46 @@ deepHas(arr, 'items.2'); // Returns false
 const obj2 = { user: { profile: null } };
 deepHas(obj2, 'user.profile'); // Returns true (null is a valid value)
 deepHas(obj2, 'user.profile.name'); // Returns false (can't access properties of null)
+```
+
+### `deepEqual(obj1: unknown, obj2: unknown): boolean`
+
+Performs deep equality comparison between two values, including objects, arrays, and primitive values.
+
+**Parameters:**
+
+- `obj1`: The first value to compare
+- `obj2`: The second value to compare
+
+**Returns:** True if the values are deeply equal, false otherwise
+
+**Features:**
+
+- Handles circular references gracefully
+- Compares Date objects by their time values
+- Compares RegExp objects by their string representation
+- Treats NaN as equal to NaN (unlike strict equality)
+- Recursively compares nested objects and arrays
+- Type-safe with proper primitive value handling
+
+**Examples:**
+
+```typescript
+// Objects
+deepEqual({ a: 1, b: { c: 2 } }, { a: 1, b: { c: 2 } }); // Returns true
+
+// Arrays
+deepEqual([1, [2, 3]], [1, [2, 3]]); // Returns true
+
+// Special values
+deepEqual(NaN, NaN); // Returns true
+deepEqual(new Date('2023-01-01'), new Date('2023-01-01')); // Returns true
+deepEqual(/abc/g, /abc/g); // Returns true
+
+// Mixed structures
+const obj1 = { users: [{ id: 1, active: true }] };
+const obj2 = { users: [{ id: 1, active: true }] };
+deepEqual(obj1, obj2); // Returns true
 ```
 
 ### `deepKeys<T>(obj: T, options?: { paths?: boolean }): string[]`
