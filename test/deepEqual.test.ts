@@ -219,6 +219,30 @@ describe('deepEqual', () => {
       expect(deepEqual(obj1, obj3)).toBe(false);
     });
 
+    it('should correctly handle complex circular references', () => {
+      // Test case that would fail with the old WeakSet approach
+      const objA: Record<string, unknown> = { name: 'A' };
+      const objB: Record<string, unknown> = { name: 'B' };
+      objA.ref = objB;
+      objB.ref = objA;
+
+      const objC: Record<string, unknown> = { name: 'A' };
+      const objD: Record<string, unknown> = { name: 'B' };
+      objC.ref = objD;
+      objD.ref = objC;
+
+      // These should be equal (same structure)
+      expect(deepEqual(objA, objC)).toBe(true);
+
+      // This should be false (different starting structure)
+      const objE: Record<string, unknown> = { name: 'A' };
+      const objF: Record<string, unknown> = { name: 'C' }; // Different name
+      objE.ref = objF;
+      objF.ref = objE;
+
+      expect(deepEqual(objA, objE)).toBe(false);
+    });
+
     it('should handle functions (should return false unless same reference)', () => {
       const func1 = () => 'test';
       const func2 = () => 'test';

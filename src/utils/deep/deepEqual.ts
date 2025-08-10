@@ -30,7 +30,7 @@ import { canHaveProperties } from '../common';
  * deepEqual(new Date('2023-01-01'), new Date('2023-01-01')); // Returns true
  * ```
  */
-export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakSet()): boolean {
+export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakMap()): boolean {
   // Handle primitive types and strict equality
   if (obj1 === obj2) {
     return true;
@@ -58,12 +58,12 @@ export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakSet())
 
   // Handle circular references
   if (visited.has(obj1 as object)) {
-    return visited.has(obj2 as object);
+    return visited.get(obj1 as object) === obj2;
   }
 
-  // Add to visited set to prevent circular reference issues
-  visited.add(obj1 as object);
-  visited.add(obj2 as object);
+  // Add to visited map to track corresponding objects
+  visited.set(obj1 as object, obj2 as object);
+  visited.set(obj2 as object, obj1 as object);
 
   try {
     // Handle Date objects
@@ -106,7 +106,7 @@ export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakSet())
       }
 
       for (const key of keys1) {
-        if (!keys2.includes(key)) {
+        if (!Object.prototype.hasOwnProperty.call(obj2, key)) {
           return false;
         }
 
@@ -121,7 +121,7 @@ export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakSet())
     // For any other object types (functions, etc.), use reference equality
     return obj1 === obj2;
   } finally {
-    // Clean up visited set
+    // Clean up visited map
     visited.delete(obj1 as object);
     visited.delete(obj2 as object);
   }
