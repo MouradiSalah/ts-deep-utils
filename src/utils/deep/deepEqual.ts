@@ -63,7 +63,6 @@ export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakMap())
 
   // Add to visited map to track corresponding objects
   visited.set(obj1 as object, obj2 as object);
-  visited.set(obj2 as object, obj1 as object);
 
   try {
     // Handle Date objects
