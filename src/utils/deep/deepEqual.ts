@@ -122,6 +122,5 @@ export function deepEqual(obj1: unknown, obj2: unknown, visited = new WeakMap())
   } finally {
     // Clean up visited map
     visited.delete(obj1 as object);
-    visited.delete(obj2 as object);
   }
 }
