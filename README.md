@@ -111,6 +111,37 @@ deepEqual(NaN, NaN); // Returns true (unlike === comparison)
 deepEqual(new Date('2023-01-01'), new Date('2023-01-01')); // Returns true
 ```
 
+### deepMap
+
+Recursively maps over all values in a nested object structure, applying a transformation function to every value while preserving the object structure.
+
+```typescript
+import { deepMap } from 'ts-deep-utils';
+
+const obj = { a: 1, b: { c: 2, d: 3 } };
+const doubled = deepMap(obj, (value) => (typeof value === 'number' ? value * 2 : value));
+// Result: { a: 2, b: { c: 4, d: 6 } }
+
+// Works with arrays and complex structures
+const data = {
+  users: [
+    { name: 'john', age: 30 },
+    { name: 'jane', age: 25 },
+  ],
+  settings: { theme: 'dark' },
+};
+const uppercase = deepMap(data, (value) =>
+  typeof value === 'string' ? value.toUpperCase() : value
+);
+// Result: { users: [{ name: 'JOHN', age: 30 }, { name: 'JANE', age: 25 }], settings: { theme: 'DARK' } }
+
+// Callback receives value, key, and full path information
+const pathTracker = deepMap(obj, (value, key, path) =>
+  typeof value === 'number' ? `${path}: ${value}` : value
+);
+// Result: { a: 'a: 1', b: { c: 'b.c: 2', d: 'b.d: 3' } }
+```
+
 ### deepKeys
 
 Extracts all keys from a nested object with flexible output options.
@@ -256,6 +287,49 @@ deepEqual(/abc/g, /abc/g); // Returns true
 const obj1 = { users: [{ id: 1, active: true }] };
 const obj2 = { users: [{ id: 1, active: true }] };
 deepEqual(obj1, obj2); // Returns true
+```
+
+### `deepMap<T>(obj: T, callback: (value: unknown, key: PropertyKey, path: string) => unknown, currentPath?: string): T`
+
+Recursively maps over all values in a nested object structure, applying a transformation function to every value while preserving the object structure.
+
+**Parameters:**
+
+- `obj`: The object to map over
+- `callback`: Function to apply to each value. Receives (value, key, path)
+- `currentPath`: Internal parameter for tracking the current path (used in recursion)
+
+**Returns:** A new object with the same structure but transformed values
+
+**Features:**
+
+- Preserves the original object/array structure
+- Handles nested objects, arrays, and primitive values
+- Provides full path context to the callback function
+- Supports special object types (Date, RegExp, functions)
+- Maintains type safety with TypeScript generics
+
+**Examples:**
+
+```typescript
+// Transform numeric values
+const numbers = { a: 1, b: { c: 2, d: [3, 4] } };
+const doubled = deepMap(numbers, (value) => (typeof value === 'number' ? value * 2 : value));
+// Result: { a: 2, b: { c: 4, d: [6, 8] } }
+
+// Transform strings based on path
+const data = { user: { name: 'john' }, title: 'admin' };
+const withPaths = deepMap(data, (value, key, path) =>
+  typeof value === 'string' ? `${path}:${value.toUpperCase()}` : value
+);
+// Result: { user: { name: 'user.name:JOHN' }, title: 'title:ADMIN' }
+
+// Handle complex structures
+const complex = { items: [{ id: 1, data: { value: 'test' } }] };
+const result = deepMap(complex, (value) =>
+  typeof value === 'string' ? value.toUpperCase() : value
+);
+// Result: { items: [{ id: 1, data: { value: 'TEST' } }] }
 ```
 
 ### `deepKeys<T>(obj: T, options?: { paths?: boolean }): string[]`
