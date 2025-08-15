@@ -60,10 +60,7 @@ export function deepMap<T>(
       const value = obj[key as keyof T];
       const valuePath = currentPath ? `${currentPath}.${String(key)}` : String(key);
 
-      if (Array.isArray(value)) {
-        // Handle arrays
-        result[key] = deepMap(value, callback, valuePath);
-      } else if (
+      if (
         canHaveProperties(value) &&
         !(value instanceof Date) &&
         !(value instanceof RegExp) &&
