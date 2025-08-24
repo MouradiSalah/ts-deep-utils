@@ -7,3 +7,4 @@ export * from './deepDelete';
 export * from './deepKeys';
 export * from './deepEqual';
 export * from './deepMap';
+export * from './deepPick';
