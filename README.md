@@ -144,21 +144,37 @@ const pathTracker = deepMap(obj, (value, key, path) =>
 
 ### deepKeys
 
-Extracts all keys from a nested object with flexible output options.
+Extracts all keys from a nested object structure, with options for returning paths or unique key names.
 
 ```typescript
 import { deepKeys } from 'ts-deep-utils';
 
-const obj = { user: { profile: { name: 'John', age: 30 } } };
-
-// Get unique key names only (default)
+const obj = { a: { b: { c: 1 } } };
 const keys = deepKeys(obj);
-// Result: ['user', 'profile', 'name', 'age']
+// Result: ['a', 'b', 'c']
 
-// Get dot-notation paths
 const paths = deepKeys(obj, { paths: true });
-// Result: ['user', 'user.profile', 'user.profile.name', 'user.profile.age']
+// Result: ['a', 'a.b', 'a.b.c']
 ```
+
+### deepPick
+
+Extracts specific properties from a nested object using dot-notation paths.
+
+```typescript
+import { deepPick } from 'ts-deep-utils';
+
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+  profile: { age: 30, city: 'NYC' },
+};
+const result = deepPick(user, ['id', 'name', 'profile.age']);
+// Result: { id: 1, name: 'John', profile: { age: 30 } }
+```
+
+### deepDelete
 
 ### deepDelete
 
@@ -356,6 +372,67 @@ deepKeys(obj);
 // Get dot-notation paths
 deepKeys(obj, { paths: true });
 // Result: ['user', 'user.profile', 'user.profile.name', 'user.profile.age']
+```
+
+### `deepPick<T>(obj: T, paths: string[]): Partial<T>`
+
+Extracts specific properties from a nested object using dot-notation paths, creating a new object with only the specified properties while preserving the nested structure.
+
+**Parameters:**
+
+- `obj`: The source object to pick properties from
+- `paths`: Array of dot-notation property paths to pick (e.g., ['a', 'b.c', 'd.e.f'])
+
+**Returns:** A new object containing only the specified properties with their nested structure preserved
+
+**Features:**
+
+- Supports nested property extraction using dot notation
+- Preserves object structure for picked properties
+- Gracefully handles non-existent paths (ignores them)
+- Maintains reference equality for picked values
+- Type-safe with proper TypeScript support
+
+**Examples:**
+
+```typescript
+// Basic property picking
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+  profile: { age: 30, city: 'NYC' }
+};
+const result = deepPick(user, ['id', 'name', 'profile.age']);
+// Result: { id: 1, name: 'John', profile: { age: 30 } }
+
+// Complex nested structures
+const data = {
+  users: [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }],
+  settings: {
+    theme: 'dark',
+    notifications: { email: true, push: false }
+  },
+  metadata: { version: '1.0' }
+};
+const picked = deepPick(data, ['users', 'settings.theme', 'settings.notifications.email']);
+// Result: {
+//   users: [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }],
+//   settings: { theme: 'dark', notifications: { email: true } }
+// }
+
+// API response filtering
+const apiResponse = {
+  status: 200,
+  data: { users: [...], pagination: { total: 100, page: 1 } },
+  meta: { timestamp: '2023-06-01' }
+};
+const summary = deepPick(apiResponse, ['status', 'data.users', 'data.pagination.total']);
+// Result: { status: 200, data: { users: [...], pagination: { total: 100 } } }
+
+// Graceful handling of non-existent paths
+deepPick({ a: 1, b: { c: 2 } }, ['a', 'b.c', 'nonexistent.path']);
+// Result: { a: 1, b: { c: 2 } } (invalid paths are ignored)
 ```
 
 ### `deepDelete<T>(obj: T, path: string): T`
