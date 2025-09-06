@@ -4,7 +4,7 @@
  * @param path The path to the property to delete.
  * @returns The modified object.
  */
-export function deepDelete<T extends Record<string, unknown>>(obj: T, path: string): T {
+export function deepDelete<T>(obj: T, path: string): T {
   const keys = path.split('.');
   let current = obj as Record<string, unknown>;
   for (let i = 0; i < keys.length - 1; i++) {

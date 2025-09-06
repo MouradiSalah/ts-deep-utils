@@ -14,7 +14,7 @@
  * const missing = deepGet(obj, 'a.b.x'); // Returns undefined
  * ```
  */
-export function deepGet<T extends Record<string, unknown>>(obj: T, path: string): unknown {
+export function deepGet<T>(obj: T, path: string): unknown {
   return path
     .split('.')
     .reduce<unknown>(
