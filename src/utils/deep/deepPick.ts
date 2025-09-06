@@ -27,10 +27,7 @@ import { canHaveProperties } from '../common';
  * // Result: { id: 1, profile: { name: 'John' }, settings: { theme: 'dark' } }
  * ```
  */
-export function deepPick<T extends Record<PropertyKey, unknown>>(
-  obj: T,
-  paths: string[]
-): Partial<T> {
+export function deepPick<T>(obj: T, paths: string[]): Partial<T> {
   // Handle invalid inputs gracefully
   if (!canHaveProperties(obj) || !Array.isArray(paths)) {
     return {} as Partial<T>;

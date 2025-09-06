@@ -16,10 +16,7 @@
  * // Result: { a: 1, b: { x: 1, y: 2 }, c: 3 }
  * ```
  */
-export function deepMerge<T extends Record<string, unknown>, U extends Record<string, unknown>>(
-  target: T,
-  source: U
-): T & U {
+export function deepMerge<T, U>(target: T, source: U): T & U {
   if (typeof target !== 'object' || typeof source !== 'object' || !target || !source) {
     return source as T & U;
   }
