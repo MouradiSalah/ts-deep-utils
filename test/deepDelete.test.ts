@@ -31,3 +31,34 @@ describe('deepDelete', () => {
     expect(result).toEqual({ arr: [{}, { id: 2 }] });
   });
 });
+
+describe('deepDelete prototype pollution', () => {
+  afterEach(() => {
+    delete (Object.prototype as Record<string, unknown>).canary;
+  });
+
+  it('should not delete properties from Object.prototype through __proto__', () => {
+    (Object.prototype as Record<string, unknown>).canary = 'present';
+    deepDelete({} as Record<string, unknown>, '__proto__.canary');
+    expect((Object.prototype as Record<string, unknown>).canary).toBe('present');
+  });
+
+  it('should not delete properties from Object.prototype through constructor.prototype', () => {
+    (Object.prototype as Record<string, unknown>).canary = 'present';
+    deepDelete({} as Record<string, unknown>, 'constructor.prototype.canary');
+    expect((Object.prototype as Record<string, unknown>).canary).toBe('present');
+  });
+
+  it('should return the object unmodified when the path is rejected', () => {
+    const obj = { a: 1 };
+    const result = deepDelete(obj, '__proto__.canary');
+    expect(result).toBe(obj);
+    expect(result).toEqual({ a: 1 });
+  });
+
+  it('should not delete inherited properties reached by a safe path', () => {
+    (Object.prototype as Record<string, unknown>).canary = 'present';
+    deepDelete({} as Record<string, unknown>, 'canary');
+    expect((Object.prototype as Record<string, unknown>).canary).toBe('present');
+  });
+});

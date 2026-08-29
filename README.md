@@ -58,7 +58,7 @@ const missing = deepGet(obj, 'a.b.x'); // Returns undefined
 
 ### deepSet
 
-Sets a nested property in an object using a dot-separated path.
+Sets a nested property in an object using a dot-separated path. The object is modified in place and returned.
 
 ```typescript
 import { deepSet } from 'ts-deep-utils';
@@ -66,6 +66,11 @@ import { deepSet } from 'ts-deep-utils';
 const obj = { a: { b: {} } };
 deepSet(obj, 'a.b.c', 42);
 // obj is now { a: { b: { c: 42 } } }
+
+// Paths containing __proto__, constructor or prototype are rejected
+// and the object is returned unmodified.
+deepSet({}, '__proto__.polluted', 'yes');
+// ({}).polluted is still undefined
 ```
 
 ### deepHas
@@ -176,9 +181,7 @@ const result = deepPick(user, ['id', 'name', 'profile.age']);
 
 ### deepDelete
 
-### deepDelete
-
-Deletes a property at a given dot-separated path from an object or array, returning a new object with the property removed. The original object is not mutated.
+Deletes a property at a given dot-separated path from an object or array. The object is modified in place and returned.
 
 ```typescript
 import { deepDelete } from 'ts-deep-utils';
@@ -186,6 +189,12 @@ import { deepDelete } from 'ts-deep-utils';
 const obj = { a: { b: { c: 1, d: 2 } } };
 const result = deepDelete(obj, 'a.b.c');
 // result: { a: { b: { d: 2 } } }
+// obj is modified too; result === obj
+
+// Paths containing __proto__, constructor or prototype are rejected
+// and the object is returned unmodified.
+deepDelete({}, '__proto__.hasOwnProperty');
+// Object.prototype.hasOwnProperty is still a function
 ```
 
 ## API Reference
@@ -226,7 +235,7 @@ Safely retrieves a nested property from an object.
 
 ### `deepSet<T>(obj: T, path: string, value: unknown): T`
 
-Sets a nested property in an object.
+Sets a nested property in an object, creating intermediate objects as needed. The object is modified in place.
 
 **Parameters:**
 
@@ -235,6 +244,8 @@ Sets a nested property in an object.
 - `value`: The value to set at the specified path
 
 **Returns:** The modified object (same reference as input)
+
+**Prototype safety:** Paths containing `__proto__`, `constructor` or `prototype` are rejected and the object is returned unmodified, to prevent prototype pollution. Intermediate keys are resolved as own properties only, so an already-polluted prototype cannot be traversed. See [SECURITY.md](SECURITY.md).
 
 ### `deepHas<T>(obj: T, path: string): boolean`
 
@@ -437,14 +448,16 @@ deepPick({ a: 1, b: { c: 2 } }, ['a', 'b.c', 'nonexistent.path']);
 
 ### `deepDelete<T>(obj: T, path: string): T`
 
-Deletes a property at the specified dot-separated path from an object or array, returning a new object with the property removed. The original object is not mutated.
+Deletes a property at the specified dot-separated path from an object or array. The object is modified in place.
 
 **Parameters:**
 
 - `obj`: The object or array to delete from
 - `path`: Dot-separated path to the property (e.g., 'a.b.c' or 'arr.0.id')
 
-**Returns:** A new object with the property removed (original is not mutated)
+**Returns:** The modified object (same reference as input)
+
+**Prototype safety:** Paths containing `__proto__`, `constructor` or `prototype` are rejected and the object is returned unmodified, so properties cannot be deleted from `Object.prototype`. See [SECURITY.md](SECURITY.md).
 
 **Examples:**
 
