@@ -1,6 +1,11 @@
+import { hasUnsafeKey } from '../common';
+
 /**
  * Sets a nested property in an object using a dot-separated path.
  * Creates intermediate objects if they don't exist.
+ *
+ * Paths containing `__proto__`, `constructor` or `prototype` are rejected and the
+ * object is returned unmodified, to prevent prototype pollution.
  *
  * @template T - Type of the object to modify
  * @param obj - The object to modify
@@ -17,9 +22,13 @@
  */
 export function deepSet<T>(obj: T, path: string, value: unknown): T {
   const keys = path.split('.');
+  if (hasUnsafeKey(keys)) return obj;
+
   let current = obj as Record<string, unknown>;
   for (let i = 0; i < keys.length - 1; i++) {
-    if (!current[keys[i]]) current[keys[i]] = {};
+    if (!Object.prototype.hasOwnProperty.call(current, keys[i]) || !current[keys[i]]) {
+      current[keys[i]] = {};
+    }
     current = current[keys[i]] as Record<string, unknown>;
   }
   current[keys[keys.length - 1]] = value;
